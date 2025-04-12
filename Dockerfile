@@ -1,13 +1,13 @@
-# Stage 1: Build Go binary statically
 FROM golang:alpine AS builder
 
 ENV GO111MODULE=on \
-    CGO_ENABLED=0  \
+    CGO_ENABLED=1  \
     GOARCH="amd64" \
     GOOS=linux
 
 WORKDIR /app
 
+RUN apk add --no-cache gcc musl-dev
 COPY . .
 RUN go mod tidy
 RUN go build --ldflags "-extldflags -static" -o koenbot .
