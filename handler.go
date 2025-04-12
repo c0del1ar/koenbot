@@ -14,9 +14,10 @@ func GetEventHandler(client *whatsmeow.Client) func(interface{}) {
 		switch v := evt.(type) {
 		case *events.Message:
 			var messageBody = v.Message.GetConversation()
-			if ResponseMessage(messageBody, client, v) != nil {
+			err := ResponseMessage(messageBody, client, v)
+			if err != nil {
 				client.SendMessage(context.Background(), v.Info.Chat, &waProto.Message{
-					Conversation: proto.String("Error processing your request."),
+					Conversation: proto.String(err.Error()),
 				})
 			}
 		case *events.JoinedGroup:

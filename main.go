@@ -17,7 +17,7 @@ import (
 
 func main() {
 
-	dbLog := waLog.Stdout("Database", "NODEBUG", true)
+	dbLog := waLog.Stdout("Database", "ERROR", true)
 	container, err := sqlstore.New("sqlite3", "file:arkunbot.db?_foreign_keys=on", dbLog)
 	if err != nil {
 		panic(err)
@@ -26,7 +26,7 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	clientLog := waLog.Stdout("Client", "NODEBUG", true)
+	clientLog := waLog.Stdout("Client", "ERROR", true)
 	client := whatsmeow.NewClient(deviceStore, clientLog)
 	client.AddEventHandler(GetEventHandler(client))
 

@@ -4,10 +4,10 @@ var textMenu = `Greetings! I am KoenBot! I can do a few things about hacking, me
 	
 	=======+++=======
 -= .menu - Displays this menu.
--= .menuHack - Displays the hack menu.
--= .menuMeme - Displays the meme menu.
--= .menuInfo - Displays the info menu.
--= 
+-= .menuHack - Displays the hacking/programming menu.
+-= .sticker [image] - Converts the image you send into a sticker.
 	=======+++=======
 	
 Any more features you want to add? Just let me know!`
+
+var textMenuHack = "Sorry, this menu is not available yet. Please check back later."
