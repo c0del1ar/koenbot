@@ -2,8 +2,8 @@ package commands
 
 import (
 	"fmt"
-	"mao/src/libs"
-	"mao/src/libs/api"
+	"koenbot/src/libs"
+	"koenbot/src/libs/api"
 	"regexp"
 	"time"
 

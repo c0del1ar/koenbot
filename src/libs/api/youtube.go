@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"mao/src/typings"
+	"koenbot/src/typings"
 	"net/http"
 	"net/url"
 	"regexp"

@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"go.mau.fi/whatsmeow"
-	waProto "go.mau.fi/whatsmeow/binary/proto"
+	waProto "go.mau.fi/whatsmeow/proto/waE2E"
 	"go.mau.fi/whatsmeow/types/events"
 	"google.golang.org/protobuf/proto"
 )
@@ -112,7 +112,7 @@ func NewSmsg(mess *events.Message, sock *NewClientImpl, jdbot ...bool) *IMessage
 		}(),
 		QuotedMsg: mess.Message.GetExtendedTextMessage().GetContextInfo(),
 		ID: &waProto.ContextInfo{
-			StanzaId:      &mess.Info.ID,
+			StanzaID:      &mess.Info.ID,
 			Participant:   proto.String(mess.Info.Sender.String()),
 			QuotedMessage: mess.Message,
 		},
@@ -132,7 +132,7 @@ func NewSmsg(mess *events.Message, sock *NewClientImpl, jdbot ...bool) *IMessage
 		}(),
 		Reply: func(text string, opts ...whatsmeow.SendRequestExtra) (whatsmeow.SendResponse, error) {
 			return sock.SendText(mess.Info.Chat, text, &waProto.ContextInfo{
-				StanzaId:      &mess.Info.ID,
+				StanzaID:      &mess.Info.ID,
 				Participant:   proto.String(mess.Info.Sender.String()),
 				QuotedMessage: mess.Message,
 			}, opts...)

@@ -2,7 +2,7 @@ package commands
 
 import (
 	"fmt"
-	"mao/src/libs"
+	"koenbot/src/libs"
 	"regexp"
 	"strings"
 
@@ -25,8 +25,8 @@ func init() {
 			var ok error
 			// apalah ini gw bingung
 			if m.QuotedMsg != nil {
-				if m.QuotedMsg.MentionedJid != nil {
-					ajid := m.QuotedMsg.MentionedJid
+				if m.QuotedMsg.MentionedJID != nil {
+					ajid := m.QuotedMsg.MentionedJID
 					ujid = make([]types.JID, len(ajid))
 					for i, a := range ajid {
 						ujid[i], ok = types.ParseJID(a)

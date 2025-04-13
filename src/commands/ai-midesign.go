@@ -1,8 +1,8 @@
 package commands
 
 import (
-	"mao/src/libs"
-	"mao/src/libs/api"
+	"koenbot/src/libs"
+	"koenbot/src/libs/api"
 )
 
 func init() {

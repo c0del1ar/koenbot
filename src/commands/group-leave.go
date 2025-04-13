@@ -2,7 +2,7 @@ package commands
 
 import (
 	"fmt"
-	"mao/src/libs"
+	"koenbot/src/libs"
 )
 
 func init() {
@@ -17,7 +17,7 @@ func init() {
 		Exec: func(client *libs.NewClientImpl, m *libs.IMessage) {
 			err := client.WA.LeaveGroup(m.From)
 			if err != nil {
-				m.Reply("Mao gagal keluar dari group ini.")
+				m.Reply("koenbot gagal keluar dari group ini.")
 				fmt.Println(err.Error())
 			}
 		},

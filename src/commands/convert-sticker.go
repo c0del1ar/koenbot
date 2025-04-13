@@ -1,9 +1,9 @@
 package commands
 
 import (
-	"mao/src/libs"
-	"mao/src/libs/api"
-	"mao/src/typings"
+	"koenbot/src/libs"
+	"koenbot/src/libs/api"
+	"koenbot/src/typings"
 )
 
 func init() {
@@ -27,7 +27,7 @@ func init() {
 				}(),
 			}, &typings.MetadataSticker{
 				Author:    "github.com/fckvania",
-				Pack:      "Mao",
+				Pack:      "koenbot",
 				KeepScale: true,
 				Removebg:  "false",
 				Circle: func() bool {

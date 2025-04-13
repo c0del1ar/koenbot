@@ -1,8 +1,8 @@
 package commands
 
 import (
-	"mao/src/helpers"
-	"mao/src/libs"
+	"koenbot/src/helpers"
+	"koenbot/src/libs"
 	"strconv"
 )
 

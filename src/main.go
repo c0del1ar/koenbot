@@ -3,8 +3,8 @@ package main
 import (
 	"context"
 	"fmt"
-	"mao/src/helpers"
-	"mao/src/libs"
+	"koenbot/src/helpers"
+	"koenbot/src/libs"
 	"net/http"
 	"os"
 	"os/signal"
@@ -12,7 +12,7 @@ import (
 	"syscall"
 	"text/template"
 
-	_ "mao/src/commands"
+	_ "koenbot/src/commands"
 
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/mdp/qrterminal"
@@ -41,7 +41,7 @@ var log helpers.Logger
 
 func main() {
 	dbLog := waLog.Stdout("Database", "ERROR", true)
-	container, err := sqlstore.New("sqlite3", "file:mao.db?_foreign_keys=on", dbLog)
+	container, err := sqlstore.New("sqlite3", "file:koenbot.db?_foreign_keys=on", dbLog)
 	if err != nil {
 		panic(err)
 	}

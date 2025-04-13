@@ -17,7 +17,8 @@ import (
 
 	"go.mau.fi/util/random"
 	"go.mau.fi/whatsmeow"
-	waProto "go.mau.fi/whatsmeow/binary/proto"
+	"go.mau.fi/whatsmeow/proto/waCommon"
+	waProto "go.mau.fi/whatsmeow/proto/waE2E"
 	"go.mau.fi/whatsmeow/types"
 	"google.golang.org/protobuf/proto"
 )
@@ -43,15 +44,15 @@ func (client *NewClientImpl) SendText(from types.JID, txt string, opts *waProto.
 
 func (client *NewClientImpl) SendWithNewsLestter(from types.JID, text string, newjid string, newserver int32, name string, opts *waProto.ContextInfo) (whatsmeow.SendResponse, error) {
 	ok, er := client.SendText(from, text, &waProto.ContextInfo{
-		ForwardedNewsletterMessageInfo: &waProto.ForwardedNewsletterMessageInfo{
-			NewsletterJid:     proto.String(newjid),
+		ForwardedNewsletterMessageInfo: &waProto.ContextInfo_ForwardedNewsletterMessageInfo{
+			NewsletterJID:     proto.String(newjid),
 			NewsletterName:    proto.String(name),
-			ServerMessageId:   proto.Int32(newserver),
-			ContentType:       waProto.ForwardedNewsletterMessageInfo_UPDATE.Enum(),
+			ServerMessageID:   proto.Int32(newserver),
+			ContentType:       waProto.ContextInfo_ForwardedNewsletterMessageInfo_UPDATE.Enum(),
 			AccessibilityText: proto.String(""),
 		},
 		IsForwarded:   proto.Bool(true),
-		StanzaId:      opts.StanzaId,
+		StanzaID:      opts.StanzaID,
 		Participant:   opts.Participant,
 		QuotedMessage: opts.QuotedMessage,
 	})
@@ -70,13 +71,13 @@ func (client *NewClientImpl) SendImage(from types.JID, data []byte, caption stri
 	}
 	resultImg := &waProto.Message{
 		ImageMessage: &waProto.ImageMessage{
-			Url:           proto.String(uploaded.URL),
+			URL:           proto.String(uploaded.URL),
 			DirectPath:    proto.String(uploaded.DirectPath),
 			MediaKey:      uploaded.MediaKey,
 			Caption:       proto.String(caption),
 			Mimetype:      proto.String(http.DetectContentType(data)),
-			FileEncSha256: uploaded.FileEncSHA256,
-			FileSha256:    uploaded.FileSHA256,
+			FileEncSHA256: uploaded.FileEncSHA256,
+			FileSHA256:    uploaded.FileSHA256,
 			FileLength:    proto.Uint64(uint64(len(data))),
 			ContextInfo:   opts,
 		},
@@ -93,13 +94,13 @@ func (client *NewClientImpl) SendVideo(from types.JID, data []byte, caption stri
 	}
 	resultVideo := &waProto.Message{
 		VideoMessage: &waProto.VideoMessage{
-			Url:           proto.String(uploaded.URL),
+			URL:           proto.String(uploaded.URL),
 			DirectPath:    proto.String(uploaded.DirectPath),
 			MediaKey:      uploaded.MediaKey,
 			Caption:       proto.String(caption),
 			Mimetype:      proto.String(http.DetectContentType(data)),
-			FileEncSha256: uploaded.FileEncSHA256,
-			FileSha256:    uploaded.FileSHA256,
+			FileEncSHA256: uploaded.FileEncSHA256,
+			FileSHA256:    uploaded.FileSHA256,
 			FileLength:    proto.Uint64(uint64(len(data))),
 			ContextInfo:   opts,
 		},
@@ -119,14 +120,14 @@ func (client *NewClientImpl) SendDocument(from types.JID, data []byte, fileName 
 	}
 	resultDoc := &waProto.Message{
 		DocumentMessage: &waProto.DocumentMessage{
-			Url:           proto.String(uploaded.URL),
+			URL:           proto.String(uploaded.URL),
 			DirectPath:    proto.String(uploaded.DirectPath),
 			MediaKey:      uploaded.MediaKey,
 			FileName:      proto.String(fileName),
 			Caption:       proto.String(caption),
 			Mimetype:      proto.String(http.DetectContentType(data)),
-			FileEncSha256: uploaded.FileEncSHA256,
-			FileSha256:    uploaded.FileSHA256,
+			FileEncSHA256: uploaded.FileEncSHA256,
+			FileSHA256:    uploaded.FileSHA256,
 			FileLength:    proto.Uint64(uint64(len(data))),
 			ContextInfo:   opts,
 		},
@@ -142,9 +143,9 @@ func (client *NewClientImpl) DeleteMsg(from types.JID, id string, me bool) {
 	client.WA.SendMessage(context.Background(), from, &waProto.Message{
 		ProtocolMessage: &waProto.ProtocolMessage{
 			Type: waProto.ProtocolMessage_REVOKE.Enum(),
-			Key: &waProto.MessageKey{
+			Key: &waCommon.MessageKey{
 				FromMe: proto.Bool(me),
-				Id:     proto.String(id),
+				ID:     proto.String(id),
 			},
 		},
 	})
@@ -247,12 +248,12 @@ func (client *NewClientImpl) SendSticker(jid types.JID, data []byte, opts *waPro
 
 	client.WA.SendMessage(context.Background(), jid, &waProto.Message{
 		StickerMessage: &waProto.StickerMessage{
-			Url:           proto.String(uploaded.URL),
+			URL:           proto.String(uploaded.URL),
 			DirectPath:    proto.String(uploaded.DirectPath),
 			MediaKey:      uploaded.MediaKey,
 			Mimetype:      proto.String(http.DetectContentType(data)),
-			FileEncSha256: uploaded.FileEncSHA256,
-			FileSha256:    uploaded.FileSHA256,
+			FileEncSHA256: uploaded.FileEncSHA256,
+			FileSHA256:    uploaded.FileSHA256,
 			FileLength:    proto.Uint64(uint64(len(data))),
 			ContextInfo:   opts,
 		},

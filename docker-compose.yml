@@ -1,0 +1,11 @@
+services:
+  koenbot:
+    build:
+      context: .
+      dockerfile: .dockerize/Dockeralp
+    container_name: koenbot
+    restart: always
+    volumes:
+      - ./store:/botapp/store
+      - ./temp:/botapp/temp
+    tty: true                   

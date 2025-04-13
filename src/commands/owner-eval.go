@@ -2,7 +2,7 @@ package commands
 
 import (
 	"encoding/json"
-	"mao/src/libs"
+	"koenbot/src/libs"
 
 	"github.com/robertkrimen/otto"
 )

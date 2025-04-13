@@ -2,7 +2,7 @@ package commands
 
 import (
 	"fmt"
-	"mao/src/libs"
+	"koenbot/src/libs"
 	"regexp"
 	"strings"
 )
@@ -23,7 +23,7 @@ func init() {
 
 			key, err := client.WA.GetNewsletterInfoWithInvite(strings.Split(m.Querry, "/")[4])
 			if err != nil {
-				m.Reply("Mao Tidak Tau Ya.")
+				m.Reply("koenbot Tidak Tau Ya.")
 				return
 			}
 
