@@ -7,7 +7,7 @@ ENV GO111MODULE=on \
 
 WORKDIR /app
 
-RUN apk add --no-cache gcc musl-dev
+RUN apk add --no-cache gcc musl-dev sqlite-dev
 COPY . .
 RUN go mod tidy
 RUN go build --ldflags "-extldflags -static" -o koenbot .

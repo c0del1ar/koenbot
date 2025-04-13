@@ -1,6 +1,6 @@
 package main
 
-var textMenu = `Greetings! I am KoenBot! I can do a few things about hacking, memes, and more stuff. Here are the available commands:
+var textMenu = `Greetings! I am KoenChan! I can do a few things about hacking, memes, and more stuff. Here are the available commands:
 	
 	=======+++=======
 -= .menu - Displays this menu.
