@@ -116,14 +116,14 @@ func questLogin() int {
 	fmt.Println("1. Pairing Code")
 	fmt.Println("2. Qr")
 	fmt.Print("Pilih : ")
-	var input int
+	/* var input int
 	_, err := fmt.Scanln(&input)
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		return 0
-	}
+	} */
 
-	return input
+	return 2
 }
 
 func HttpStatic(client *whatsmeow.Client) {
