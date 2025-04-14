@@ -18,7 +18,7 @@ import (
 	"github.com/mdp/qrterminal"
 	"github.com/subosito/gotenv"
 	"go.mau.fi/whatsmeow"
-	waProto "go.mau.fi/whatsmeow/binary/proto"
+	"go.mau.fi/whatsmeow/proto/waCompanionReg"
 	"go.mau.fi/whatsmeow/store"
 	"go.mau.fi/whatsmeow/store/sqlstore"
 	"go.mau.fi/whatsmeow/types"
@@ -33,7 +33,7 @@ type Template struct {
 
 func init() {
 	gotenv.Load()
-	store.DeviceProps.PlatformType = waProto.DeviceProps_SAFARI.Enum()
+	store.DeviceProps.PlatformType = waCompanionReg.DeviceProps_SAFARI.Enum()
 	store.DeviceProps.Os = proto.String(os.Getenv("Name_Bot"))
 }
 
@@ -75,7 +75,6 @@ func main() {
 			}
 
 			fmt.Println("Code Kamu : " + code)
-			break
 		case 2:
 			qrChan, _ := client.GetQRChannel(context.Background())
 			if err := client.Connect(); err != nil {
@@ -86,10 +85,8 @@ func main() {
 				case "code":
 					qrterminal.GenerateHalfBlock(evt.Code, qrterminal.L, os.Stdout)
 					log.Info("Qr Required")
-					break
 				}
 			}
-			break
 		default:
 			panic("Pilih apa?")
 		}
@@ -104,7 +101,7 @@ func main() {
 	go HttpStatic(client)
 
 	// Listen to Ctrl+C (you can also do something else that prevents the program from exiting)
-	c := make(chan os.Signal)
+	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt, syscall.SIGTERM)
 	<-c
 
