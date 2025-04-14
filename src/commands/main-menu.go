@@ -62,7 +62,7 @@ func menu(client *libs.NewClientImpl, m *libs.IMessage) {
 		}
 		str += "\n"
 	}
-	client.SendWithNewsLestter(m.From, str, "120363205826017795@newsletter", 100, "My Name koenbot", m.ID)
+	client.SendWithNewsLestter(m.From, str, "120363197944003644@newsletter", 100, "My Name koenchan", m.ID)
 }
 
 func init() {
