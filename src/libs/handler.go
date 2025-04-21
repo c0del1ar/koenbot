@@ -27,7 +27,7 @@ func NewHandler(container *sqlstore.Container) *IHandler {
 }
 
 func (h *IHandler) Client(jbot ...bool) *whatsmeow.Client {
-	clientLog := waLog.Stdout("lient", "ERROR", true)
+	clientLog := waLog.Stdout("Client", "ERROR", true)
 	client := whatsmeow.NewClient(h.Container, clientLog)
 	client.AddEventHandler(h.RegisterHandler(client, jbot...))
 	return client

@@ -1,15 +1,21 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"koenbot/src/typings"
+	"log"
 	"net/http"
-	"net/url"
+	"os"
+	"path/filepath"
 	"regexp"
 	"strconv"
+	"time"
+
+	"github.com/lrstanley/go-ytdlp"
 )
 
 var youtubeRegex = regexp.MustCompile(`^(https?://)?(www\.)?(youtube\.com|youtu\.be)/.+`)
@@ -28,70 +34,123 @@ func parseSeconds(s string) string {
 
 func YoutubeDL(uri string) (typings.YoutubeInfos, error) {
 	if !IsYoutubeURL(uri) {
-		return typings.YoutubeInfos{}, errors.New("Url Invalid")
+		return typings.YoutubeInfos{}, errors.New("url invalid")
 	}
-	params := url.Values{}
-	params.Add("q", uri)
-	params.Add("vt", "home")
+	ydl := ytdlp.New().
+		PrintJSON().
+		NoProgress().
+		FormatSort("res,ext:mp4:m4a").
+		RecodeVideo("mp4").
+		NoPlaylist().
+		Continue().
+		ProgressFunc(100*time.Millisecond, func(prog ytdlp.ProgressUpdate) {
+			fmt.Printf( //nolint:forbidigo
+				"%s @ %s [eta: %s] :: %s\n",
+				prog.Status,
+				prog.PercentString(),
+				prog.ETA(),
+				prog.Filename,
+			)
+		}).
+		Output("%(extractor)s - %(title)s.%(ext)s")
 
-	req, err := http.PostForm("https://yt1s.com/api/ajaxSearch/index", params)
+	req, err := ydl.Run(context.TODO(), uri)
 	if err != nil {
 		return typings.YoutubeInfos{}, err
 	}
 
-	req.Header.Add("User-Agent", "WhatsApp/2.2353.59")
-
-	defer req.Body.Close()
-
-	body, err := ioutil.ReadAll(req.Body)
+	f, err := os.Create("results.json")
 	if err != nil {
-		return typings.YoutubeInfos{}, err
+		panic(err)
 	}
+	defer f.Close()
+
+	enc := json.NewEncoder(f)
+	enc.SetIndent("", "    ")
+
+	if err = enc.Encode(req); err != nil {
+		panic(err)
+	}
+
+	log.Println("wrote results to results.json")
 
 	var data map[string]interface{}
-	err = json.Unmarshal(body, &data)
+	err = json.Unmarshal(*req.OutputLogs[0].JSON, &data)
 	if err != nil {
 		return typings.YoutubeInfos{}, err
 	}
-
-	// Extract information from data map
 
 	info := typings.YoutubeInfo{
 		Title:    data["title"].(string),
-		Duration: data["t"].(float64),
-		Author:   data["a"].(string),
+		Duration: data["duration"].(float64),
+		Author:   data["uploader"].(string),
 	}
 	link := typings.YoutubeLinks{}
 
-	for _, dat := range data["links"].(map[string]interface{})["mp3"].(map[string]interface{}) {
+	formats, ok := data["requested_formats"].([]interface{})
+	if !ok {
+		return typings.YoutubeInfos{}, errors.New("invalid formats structure")
+	}
+
+	for _, dat := range formats {
 		a := dat.(map[string]interface{})
-		if a["f"].(string) != "mp3" {
+		if a["ext"].(string) != "mp3" {
 			continue
 		}
 		link.Audio = append(link.Audio, typings.YoutubeAV{
-			Size:    a["size"].(string),
-			Format:  a["f"].(string),
-			Quality: a["q"].(string),
+			Size:    a["filesize"].(string),
+			Format:  a["format"].(string),
+			Quality: a["quality"].(string),
 			Url: func() (string, error) {
-				return Download(data["vid"].(string), a["k"].(string))
+				return data["filename"].(string), nil
 			},
 		})
 	}
 
-	for _, dat := range data["links"].(map[string]interface{})["mp4"].(map[string]interface{}) {
+	for _, dat := range formats {
 		a := dat.(map[string]interface{})
-		if a["f"].(string) != "mp4" {
+		if a["ext"].(string) != "mp4" {
 			continue
 		}
+
+		var sizefile string
+		if fs, ok := a["filesize"]; ok && fs != nil {
+			// filesize is usually a float64 (bytes), convert to readable format or string
+			switch v := fs.(type) {
+			case float64:
+				sizefile = fmt.Sprintf("%.0f", v) // raw byte size as string
+			default:
+				sizefile = fmt.Sprintf("%v", v) // fallback for any other type
+			}
+		} else {
+			sizefile = "Unknown"
+		}
+
 		link.Video = append(link.Video, typings.YoutubeAV{
-			Size:    a["size"].(string),
-			Format:  a["f"].(string),
-			Quality: a["q"].(string),
+			Size:   sizefile,
+			Format: a["format"].(string),
+			Quality: func() string {
+				q, ok := a["quality"]
+				if !ok || q == nil {
+					return "Unknown"
+				}
+				switch v := q.(type) {
+				case string:
+					return v
+				case float64:
+					return fmt.Sprintf("%.0f", v)
+				default:
+					return fmt.Sprintf("%v", v)
+				}
+			}(),
 			Url: func() (string, error) {
-				return Download(data["vid"].(string), a["k"].(string))
+				return data["filename"].(string), nil
 			},
 		})
 	}
+
+	log.Println("success download")
+	log.Println("title: ", info.Title)
 
 	return typings.YoutubeInfos{
 		Info: info,
@@ -99,34 +158,35 @@ func YoutubeDL(uri string) (typings.YoutubeInfos, error) {
 	}, nil
 }
 
-func Download(id string, k string) (string, error) {
-	params := url.Values{}
-	params.Add("vid", id)
-	params.Add("k", k)
+func Download(url string, formatID string) (string, error) {
+	// Generate a temp filename based on formatID
+	filename := filepath.Join(os.TempDir(), fmt.Sprintf("yt_%s.tmp", formatID))
 
-	req, err := http.PostForm("https://yt1s.com/api/ajaxConvert/convert", params)
+	// Create the file
+	out, err := os.Create(filename)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to create file: %w", err)
 	}
+	defer out.Close()
 
-	req.Header.Set("User-Agent", "WhatsApp/2.2353.59")
-
-	defer req.Body.Close()
-
-	body, err := ioutil.ReadAll(req.Body)
+	// Make the request
+	resp, err := http.Get(url)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to download: %w", err)
+	}
+	defer resp.Body.Close()
+
+	// Check HTTP status
+	if resp.StatusCode != http.StatusOK {
+		return "", errors.New("download failed with status: " + resp.Status)
 	}
 
-	var data map[string]interface{}
-	err = json.Unmarshal(body, &data)
+	// Write to file
+	_, err = io.Copy(out, resp.Body)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("failed to write to file: %w", err)
 	}
 
-	if data["dlink"] == nil {
-		return "", errors.New("Terjadi Kesalahan.")
-	}
-
-	return data["dlink"].(string), nil
+	// Download success
+	return url, nil
 }

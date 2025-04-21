@@ -5,6 +5,7 @@ go 1.24
 require (
 	github.com/Pauloo27/searchtube v0.0.0-20220521202404-f65e288832a0
 	github.com/google/uuid v1.6.0
+	github.com/lrstanley/go-ytdlp v0.0.0-20250401014907-da1707e4fb85
 	github.com/mattn/go-sqlite3 v1.14.27
 	github.com/mdp/qrterminal v1.0.1
 	github.com/nyaruka/phonenumbers v1.6.0
@@ -18,7 +19,9 @@ require (
 
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
+	github.com/ProtonMail/go-crypto v1.1.5 // indirect
 	github.com/buger/jsonparser v1.1.1 // indirect
+	github.com/cloudflare/circl v1.6.0 // indirect
 	github.com/gorilla/websocket v1.5.3 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect

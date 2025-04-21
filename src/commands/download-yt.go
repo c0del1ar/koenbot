@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"koenbot/src/libs"
 	"koenbot/src/libs/api"
+	"log"
+	"os"
 	"regexp"
 	"time"
 
@@ -70,11 +72,14 @@ func init() {
 					m.Reply(err.Error())
 					return
 				}
-				bytes, err := client.GetBytes(build)
+				bytes, err := os.ReadFile(build)
 				if err != nil {
 					m.Reply(err.Error())
 					return
 				}
+
+				log.Println("Video", build)
+
 				client.SendVideo(m.From, bytes, caption, m.ID)
 			}
 		},

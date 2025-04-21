@@ -9,7 +9,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
+	"log"
 	"mime/multipart"
 	"net/http"
 	"strings"
@@ -71,7 +71,7 @@ func (client *NewClientImpl) SendImage(from types.JID, data []byte, caption stri
 	}
 	resultImg := &waProto.Message{
 		ImageMessage: &waProto.ImageMessage{
-			URL:           proto.String(uploaded.URL),
+			URL:           &uploaded.URL,
 			DirectPath:    proto.String(uploaded.DirectPath),
 			MediaKey:      uploaded.MediaKey,
 			Caption:       proto.String(caption),
@@ -92,16 +92,20 @@ func (client *NewClientImpl) SendVideo(from types.JID, data []byte, caption stri
 		fmt.Printf("Failed to upload file: %v\n", err)
 		return whatsmeow.SendResponse{}, err
 	}
+
+	mime := http.DetectContentType(data)
+	log.Println("MIME Type:", mime)
+
 	resultVideo := &waProto.Message{
 		VideoMessage: &waProto.VideoMessage{
-			URL:           proto.String(uploaded.URL),
-			DirectPath:    proto.String(uploaded.DirectPath),
+			URL:           &uploaded.URL,
+			DirectPath:    &uploaded.DirectPath,
 			MediaKey:      uploaded.MediaKey,
 			Caption:       proto.String(caption),
 			Mimetype:      proto.String(http.DetectContentType(data)),
 			FileEncSHA256: uploaded.FileEncSHA256,
 			FileSHA256:    uploaded.FileSHA256,
-			FileLength:    proto.Uint64(uint64(len(data))),
+			FileLength:    &uploaded.FileLength,
 			ContextInfo:   opts,
 		},
 	}
@@ -109,6 +113,7 @@ func (client *NewClientImpl) SendVideo(from types.JID, data []byte, caption stri
 	if er != nil {
 		return whatsmeow.SendResponse{}, er
 	}
+
 	return ok, nil
 }
 
@@ -120,15 +125,15 @@ func (client *NewClientImpl) SendDocument(from types.JID, data []byte, fileName 
 	}
 	resultDoc := &waProto.Message{
 		DocumentMessage: &waProto.DocumentMessage{
-			URL:           proto.String(uploaded.URL),
-			DirectPath:    proto.String(uploaded.DirectPath),
+			URL:           &uploaded.URL,
+			DirectPath:    &uploaded.DirectPath,
 			MediaKey:      uploaded.MediaKey,
 			FileName:      proto.String(fileName),
 			Caption:       proto.String(caption),
 			Mimetype:      proto.String(http.DetectContentType(data)),
 			FileEncSHA256: uploaded.FileEncSHA256,
 			FileSHA256:    uploaded.FileSHA256,
-			FileLength:    proto.Uint64(uint64(len(data))),
+			FileLength:    &uploaded.FileLength,
 			ContextInfo:   opts,
 		},
 	}
@@ -181,7 +186,7 @@ func (client *NewClientImpl) UploadImage(data []byte) (string, error) {
 		return "", fmt.Errorf("HTTP Error: %d", resp.StatusCode)
 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", err
 	}
@@ -266,7 +271,7 @@ func (client *NewClientImpl) GetBytes(url string) ([]byte, error) {
 		return []byte{}, err
 	}
 
-	bytes, err := ioutil.ReadAll(resp.Body)
+	bytes, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return []byte{}, err
 	}
