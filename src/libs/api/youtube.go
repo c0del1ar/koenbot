@@ -42,6 +42,7 @@ func YoutubeDL(uri string) (typings.YoutubeInfos, error) {
 		FormatSort("res,ext:mp4:m4a").
 		RecodeVideo("mp4").
 		NoPlaylist().
+		MaxFileSize("100M").
 		Continue().
 		ProgressFunc(100*time.Millisecond, func(prog ytdlp.ProgressUpdate) {
 			fmt.Printf( //nolint:forbidigo

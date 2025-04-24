@@ -78,9 +78,13 @@ func init() {
 					return
 				}
 
-				log.Println("Video", build)
-
 				client.SendVideo(m.From, bytes, caption, m.ID)
+
+				// delete the file after sending
+				err = os.Remove(build)
+				if err != nil {
+					log.Printf("Error deleting file: %v", err)
+				}
 			}
 		},
 	})

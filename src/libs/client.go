@@ -9,7 +9,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"log"
 	"mime/multipart"
 	"net/http"
 	"strings"
@@ -92,9 +91,6 @@ func (client *NewClientImpl) SendVideo(from types.JID, data []byte, caption stri
 		fmt.Printf("Failed to upload file: %v\n", err)
 		return whatsmeow.SendResponse{}, err
 	}
-
-	mime := http.DetectContentType(data)
-	log.Println("MIME Type:", mime)
 
 	resultVideo := &waProto.Message{
 		VideoMessage: &waProto.VideoMessage{
