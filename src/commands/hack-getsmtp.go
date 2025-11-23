@@ -1,48 +1,43 @@
 package commands
 
 import (
-	"context"
-	"net"
+	"fmt"
 	"net/smtp"
-	"time"
+	"os"
 
 	"koenbot/src/libs"
 )
 
 func checkSMTPActive(host, port, user, pass string) bool {
-	// Create context with timeout (10 seconds)
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
-	defer cancel()
+	from := user
+	to := []string{os.Getenv("Email_Test")}
 
-	// Create dialer with timeout
-	dialer := &net.Dialer{
-		Timeout: 10 * time.Second,
-	}
+	// Email content
+	subject := "Koenchan Test Email"
+	body := "This is a test email sent"
 
-	// Dial SMTP server
-	addr := net.JoinHostPort(host, port)
-	conn, err := dialer.DialContext(ctx, "tcp", addr)
-	if err != nil {
-		return false
-	}
-	defer conn.Close()
+	// Build the email message
+	message := []byte(fmt.Sprintf(
+		"From: %s\r\n"+
+			"To: %s\r\n"+
+			"Subject: %s\r\n"+
+			"\r\n"+
+			"%s",
+		from,
+		to[0], // For simplicity, assume a single recipient in the To header
+		subject,
+		body,
+	))
 
-	// Create SMTP client
-	client, err := smtp.NewClient(conn, host)
-	if err != nil {
-		return false
-	}
-	defer client.Close()
-
-	// Check if server supports AUTH
-	authSupported, _ := client.Extension("AUTH")
-	if !authSupported {
-		return false
-	}
-
-	// Try to authenticate
+	// Authenticate with the SMTP server
 	auth := smtp.PlainAuth("", user, pass, host)
-	err = client.Auth(auth)
+
+	// Send the email
+	err := smtp.SendMail(host+":"+port, auth, from, to, message)
+	if err != nil {
+		fmt.Printf("Error sending email: %v", err)
+	}
+
 	return err == nil
 }
 
@@ -106,19 +101,33 @@ func join(arr []string, sep string) string {
 	return res
 }
 
+func writeFile(filename, content string) error {
+	return os.WriteFile(filename, []byte(content), 0644)
+}
+
 func init() {
 	libs.NewCommands(&libs.ICommand{
-		Name:        "(getsmtp|smtpc)",
-		As:          []string{"getsmtp"},
-		Description: "Check usable smtp from your list. Commands used: getsmtp,smtpc",
-		Tags:        "hacking",
-		IsPrefix:    true,
-		IsQuerry:    true,
-		IsWaitt:     true,
+		Name: "(getsmtp|smtpc)",
+		As:   []string{"getsmtp"},
+		Description: "Mass check usable smtp from your list. Commands available: getsmtp,smtpc.\n\n" +
+			"# Example:\n" +
+			"```" +
+			"getsmtp mail.google.com|45|kuntul@gmail.com|beraxsilied1337" +
+			"mail.office.com|567|ffex1.3@office.com|long@or3#taEk" +
+			"```" +
+			"\n\nUp to 20 lines checking",
+		Tags:     "hacking",
+		IsPrefix: true,
+		IsQuerry: true,
+		IsWaitt:  true,
 		Exec: func(client *libs.NewClientImpl, m *libs.IMessage) {
 			// get list of smtp from input string (one per line)
 			smtps := m.Querry
 			lines := splitLines(smtps)
+			// Limit to maximum 20 lines
+			if len(lines) > 20 {
+				lines = lines[:20]
+			}
 
 			if len(lines) == 0 {
 				m.Reply("No SMTP data provided")
@@ -142,10 +151,25 @@ func init() {
 				}
 			}
 			if len(activeSmtps) == 0 {
-				m.Reply("No active SMTPs found.")
+				m.Reply("Sorry.. No active SMTPs found for you " + m.PushName + "-kun :(")
 			} else {
-				result := "Active SMTPs:\n" + join(activeSmtps, "\n")
-				m.Reply(result)
+				// Create sally-smtps.txt and send it
+				filename := "sally-smtps.txt"
+				content := join(activeSmtps, "\n")
+				err := writeFile(filename, content)
+				if err != nil {
+					m.Reply("Failed to create file for you")
+				} else {
+					// Read file and send it
+					fileData, err := os.ReadFile(filename)
+					if err != nil {
+						m.Reply("Failed to read file")
+					} else {
+						client.SendDocument(m.From, fileData, filename, "Here is your active SMTPs "+m.PushName+"-kun >//<", m.ID)
+						// Clean up: delete the file after sending
+						os.Remove(filename)
+					}
+				}
 			}
 		},
 	})

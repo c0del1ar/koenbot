@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"koenbot/src/helpers"
 	"koenbot/src/libs"
 	"sort"
 	"strings"
@@ -62,7 +63,7 @@ func menu(client *libs.NewClientImpl, m *libs.IMessage) {
 		}
 		str += "\n"
 	}
-	client.SendWithNewsLestter(m.From, str, "120363197944003644@newsletter", 100, "My Name koenchan", m.ID)
+	client.SendWithNewsLestter(m.From, str, "120363197944003644@newsletter", 100, helpers.Name+" Bot", m.ID)
 }
 
 func init() {

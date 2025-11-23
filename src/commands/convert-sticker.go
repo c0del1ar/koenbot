@@ -27,8 +27,8 @@ func init() {
 					}
 				}(),
 			}, &typings.MetadataSticker{
-				Author:    "github.com/fckvania",
-				Pack:      "koenbot",
+				Author:    "Sally-chan",
+				Pack:      "Sally-chan Technolojia",
 				KeepScale: true,
 				Removebg:  "false",
 				Circle: func() bool {

@@ -59,7 +59,10 @@ func Get(c *NewClientImpl, m *IMessage) {
 			}
 
 			if cmd.IsQuerry && m.Querry == "" {
-				m.Reply("Querry Di Butuhkan")
+				m.Reply("Query Di Butuhkan")
+				if cmd.Description != "" {
+					m.Reply(cmd.Description)
+				}
 				continue
 			}
 
