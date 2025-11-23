@@ -15,7 +15,7 @@ func init() {
 		IsOwner:  true,
 		IsGroup:  true,
 		Exec: func(client *libs.NewClientImpl, m *libs.IMessage) {
-			err := client.WA.LeaveGroup(m.From)
+			err := client.WA.LeaveGroup(libs.ContextB(), m.From)
 			if err != nil {
 				m.Reply("koenbot gagal keluar dari group ini.")
 				fmt.Println(err.Error())

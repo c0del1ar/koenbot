@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"context"
 	"koenbot/src/libs"
 	"koenbot/src/libs/api"
 	"koenbot/src/typings"
@@ -14,7 +15,7 @@ func init() {
 		IsPrefix: true,
 		IsMedia:  true,
 		Exec: func(client *libs.NewClientImpl, m *libs.IMessage) {
-			data, _ := client.WA.Download(m.Media)
+			data, _ := client.WA.Download(context.Background(), m.Media)
 
 			s := api.StickerApi(&typings.Sticker{
 				File: data,

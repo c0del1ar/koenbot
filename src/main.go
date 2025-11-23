@@ -41,7 +41,7 @@ var log helpers.Logger
 
 func main() {
 	dbLog := waLog.Stdout("Database", "ERROR", true)
-	container, err := sqlstore.New("sqlite3", "file:koenbot.db?_foreign_keys=on", dbLog)
+	container, err := sqlstore.New(context.Background(), "sqlite3", "file:koenbot.db?_foreign_keys=on", dbLog)
 	if err != nil {
 		panic(err)
 	}
@@ -69,7 +69,7 @@ func main() {
 				panic(err)
 			}
 
-			code, err := client.PairPhone(nomor, true, whatsmeow.PairClientChrome, "Chrome (Linux)")
+			code, err := client.PairPhone(context.Background(), nomor, true, whatsmeow.PairClientChrome, "Chrome (Linux)")
 			if err != nil {
 				panic(err)
 			}

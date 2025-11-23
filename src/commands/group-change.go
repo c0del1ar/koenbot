@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"context"
 	"fmt"
 	"koenbot/src/libs"
 	"regexp"
@@ -60,7 +61,7 @@ func init() {
 			}
 
 			if regexp.MustCompile(`demote|dm`).MatchString(m.Command) {
-				resp, err := client.WA.UpdateGroupParticipants(m.From, ujid, whatsmeow.ParticipantChangeDemote)
+				resp, err := client.WA.UpdateGroupParticipants(context.Background(), m.From, ujid, whatsmeow.ParticipantChangeDemote)
 				if err != nil {
 					m.Reply("Gagal menurunkan admin")
 					return
@@ -74,7 +75,7 @@ func init() {
 					}
 				}
 			} else {
-				resp, err := client.WA.UpdateGroupParticipants(m.From, ujid, whatsmeow.ParticipantChangePromote)
+				resp, err := client.WA.UpdateGroupParticipants(context.Background(), m.From, ujid, whatsmeow.ParticipantChangePromote)
 				if err != nil {
 					m.Reply("Gagal menjadikan admin")
 					return

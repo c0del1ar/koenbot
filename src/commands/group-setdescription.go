@@ -16,7 +16,7 @@ func init() {
 		IsGroup:    true,
 		IsBotAdmin: true,
 		Exec: func(client *libs.NewClientImpl, m *libs.IMessage) {
-			err := client.WA.SetGroupTopic(m.From, "", "", m.Querry)
+			err := client.WA.SetGroupTopic(libs.ContextB(), m.From, "", "", m.Querry)
 			if err != nil {
 				m.Reply("Gagal mengubah deskripsi group")
 				return

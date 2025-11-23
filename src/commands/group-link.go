@@ -15,7 +15,7 @@ func init() {
 		IsGroup:    true,
 		IsBotAdmin: true,
 		Exec: func(client *libs.NewClientImpl, m *libs.IMessage) {
-			resp, err := client.WA.GetGroupInviteLink(m.From, false)
+			resp, err := client.WA.GetGroupInviteLink(libs.ContextB(), m.From, false)
 			if err != nil {
 				m.Reply("Gagal mendapatkan link group.")
 			} else {

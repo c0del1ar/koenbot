@@ -21,7 +21,7 @@ func init() {
 				return
 			}
 
-			key, err := client.WA.GetNewsletterInfoWithInvite(strings.Split(m.Querry, "/")[4])
+			key, err := client.WA.GetNewsletterInfoWithInvite(libs.ContextB(), strings.Split(m.Querry, "/")[4])
 			if err != nil {
 				m.Reply("koenbot Tidak Tau Ya.")
 				return

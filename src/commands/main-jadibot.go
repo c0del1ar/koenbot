@@ -37,7 +37,7 @@ func init() {
 			if m.IsGroup {
 				return
 			}
-			if queque[m.Sender.ToNonAD().String()] && strings.Contains(m.QuotedMsg.GetStanzaId(), "JBOT") {
+			if queque[m.Sender.ToNonAD().String()] && strings.Contains(m.QuotedMsg.GetStanzaID(), "JBOT") {
 				pattern := regexp.MustCompile(`[1-2]`)
 				delete(queque, m.Sender.ToNonAD().String())
 				if pattern.MatchString(m.Body) {
@@ -45,7 +45,7 @@ func init() {
 					os.Mkdir(".sesi", 0777)
 					sesiPath := fmt.Sprintf(".sesi/%s.db", m.Sender.ToNonAD().String())
 					dbLog := waLog.Stdout("Database", "ERROR", true)
-					container, err := sqlstore.New("sqlite3", fmt.Sprintf("file:%s?_foreign_keys=on", sesiPath), dbLog)
+					container, err := sqlstore.New(libs.ContextB(), "sqlite3", fmt.Sprintf("file:%s?_foreign_keys=on", sesiPath), dbLog)
 					if err != nil {
 						panic(err)
 					}
@@ -81,7 +81,7 @@ func init() {
 								panic(err)
 							}
 
-							code, err := conn.PairPhone(m.Sender.User, true, whatsmeow.PairClientChrome, "Chrome (Linux)")
+							code, err := conn.PairPhone(libs.ContextB(), m.Sender.User, true, whatsmeow.PairClientChrome, "Chrome (Linux)")
 							if err != nil {
 								panic(err)
 							}
@@ -93,7 +93,7 @@ func init() {
 										return
 									}
 									conn.Disconnect()
-									conn.Logout()
+									conn.Logout(libs.ContextB())
 									//client.DeleteMsg(m.From, res.ID, true)
 									m.Reply("Expired")
 									os.Remove(sesiPath)
@@ -119,7 +119,7 @@ func init() {
 								if evt.Event == "code" {
 									if i > 3 {
 										conn.Disconnect()
-										conn.Logout()
+										conn.Logout(libs.ContextB())
 										m.Reply("Limit Qr Sudah Habis")
 										os.Remove(sesiPath)
 										delete(jRoom, m.Sender.ToNonAD().String())
@@ -161,7 +161,7 @@ func init() {
 
 				m.Reply("Success Logout")
 				client.WA.Disconnect()
-				client.WA.Logout()
+				client.WA.Logout(libs.ContextB())
 				os.Remove(fmt.Sprintf(".sesi/%s.db", m.Sender.ToNonAD().String()))
 			} else {
 				if m.IsBot {

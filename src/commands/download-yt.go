@@ -9,7 +9,7 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/Pauloo27/searchtube"
+	"github.com/pauloo27/searchtube"
 )
 
 type method string

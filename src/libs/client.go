@@ -228,7 +228,7 @@ func (cli *NewClientImpl) GenerateMessageID(cust string) types.MessageID {
 
 func (client *NewClientImpl) FetchGroupAdmin(Jid types.JID) ([]string, error) {
 	var Admin []string
-	resp, err := client.WA.GetGroupInfo(Jid)
+	resp, err := client.WA.GetGroupInfo(context.Background(), Jid)
 	if err != nil {
 		return Admin, err
 	} else {

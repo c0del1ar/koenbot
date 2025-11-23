@@ -1,6 +1,7 @@
 package libs
 
 import (
+	"context"
 	"koenbot/src/helpers"
 	"time"
 
@@ -17,7 +18,7 @@ type IHandler struct {
 }
 
 func NewHandler(container *sqlstore.Container) *IHandler {
-	deviceStore, err := container.GetFirstDevice()
+	deviceStore, err := container.GetFirstDevice(context.Background())
 	if err != nil {
 		panic(err)
 	}
@@ -43,7 +44,7 @@ func (h *IHandler) RegisterHandler(client *whatsmeow.Client, jbot ...bool) func(
 				return
 			}
 			// Read message
-			sock.WA.MarkRead([]string{m.StanzaId}, time.Now(), m.From, m.Sender)
+			sock.WA.MarkRead(context.Background(), []string{m.StanzaId}, time.Now(), m.From, m.Sender)
 			// Get command
 			go Get(sock, m)
 			return
@@ -51,7 +52,7 @@ func (h *IHandler) RegisterHandler(client *whatsmeow.Client, jbot ...bool) func(
 			if len(client.Store.PushName) == 0 {
 				return
 			}
-			client.SendPresence(types.PresenceAvailable)
+			client.SendPresence(context.Background(), types.PresenceAvailable)
 		}
 	}
 }
