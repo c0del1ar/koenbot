@@ -62,7 +62,7 @@ func YoutubeDL(uri string) (typings.YoutubeInfos, error) {
 
 	f, err := os.Create("results.json")
 	if err != nil {
-		panic(err)
+		return typings.YoutubeInfos{}, err
 	}
 	defer f.Close()
 
@@ -70,7 +70,7 @@ func YoutubeDL(uri string) (typings.YoutubeInfos, error) {
 	enc.SetIndent("", "    ")
 
 	if err = enc.Encode(req); err != nil {
-		panic(err)
+		return typings.YoutubeInfos{}, err
 	}
 
 	log.Println("wrote results to results.json")

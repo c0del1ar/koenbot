@@ -111,11 +111,9 @@ func init() {
 		As:   []string{"getsmtp"},
 		Description: "Mass check usable smtp from your list. Commands available: getsmtp,smtpc.\n\n" +
 			"# Example:\n" +
-			"```" +
-			"getsmtp mail.google.com|45|kuntul@gmail.com|beraxsilied1337" +
-			"mail.office.com|567|ffex1.3@office.com|long@or3#taEk" +
-			"```" +
-			"\n\nUp to 20 lines checking",
+			"> .getsmtp mail.google.com|45|kuntul@gmail.com|beraxsilied1337\n" +
+			"> mail.office.com|567|ffex1.3@office.com|long@or3#taEk\n" +
+			"\nUp to 20 lines checking",
 		Tags:     "hacking",
 		IsPrefix: true,
 		IsQuerry: true,

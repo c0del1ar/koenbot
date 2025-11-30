@@ -4,9 +4,12 @@ import (
 	"fmt"
 	"koenbot/src/helpers"
 	"koenbot/src/libs"
+	"os"
 	"sort"
 	"strings"
 )
+
+var hLog helpers.Logger
 
 type item struct {
 	Name     []string
@@ -29,7 +32,7 @@ func (t tagSlice) Swap(i int, j int) {
 
 func menu(client *libs.NewClientImpl, m *libs.IMessage) {
 	var str string
-	str += fmt.Sprintf("Hello %s, Berikut List Command Yang Tersedia\n\n", m.PushName)
+	str += fmt.Sprintf("Hello %s-san >//<, Here commands available to use\n\n", m.PushName)
 	var tags map[string][]item
 	for _, list := range libs.GetList() {
 		if tags == nil {
@@ -63,7 +66,7 @@ func menu(client *libs.NewClientImpl, m *libs.IMessage) {
 		}
 		str += "\n"
 	}
-	client.SendWithNewsLestter(m.From, str, "120363197944003644@newsletter", 100, helpers.Name+" Bot", m.ID)
+	client.SendWithNewsLestter(m.From, str, "120363197944003644@newsletter", 100, os.Getenv("Name_Bot")+" Bot", m.ID)
 }
 
 func init() {

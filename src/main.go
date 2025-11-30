@@ -126,7 +126,7 @@ func questLogin() int {
 func HttpStatic(client *whatsmeow.Client) {
 	var port string = os.Getenv("PORT")
 	if port == "" {
-		port = "8080"
+		port = "41100"
 	}
 	var filepath = path.Join("static/views", "index.html")
 	var tmpl, _ = template.ParseFiles(filepath)

@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"koenbot/src/helpers"
 	"koenbot/src/libs"
 	"regexp"
 	"strings"
@@ -23,7 +24,7 @@ func init() {
 
 			key, err := client.WA.GetNewsletterInfoWithInvite(libs.ContextB(), strings.Split(m.Querry, "/")[4])
 			if err != nil {
-				m.Reply("koenbot Tidak Tau Ya.")
+				m.Reply(helpers.Name + " Tidak Tau Ya.")
 				return
 			}
 

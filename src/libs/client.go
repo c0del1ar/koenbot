@@ -94,14 +94,14 @@ func (client *NewClientImpl) SendVideo(from types.JID, data []byte, caption stri
 
 	resultVideo := &waProto.Message{
 		VideoMessage: &waProto.VideoMessage{
-			URL:           &uploaded.URL,
-			DirectPath:    &uploaded.DirectPath,
+			URL:           proto.String(uploaded.URL),
+			DirectPath:    proto.String(uploaded.DirectPath),
 			MediaKey:      uploaded.MediaKey,
 			Caption:       proto.String(caption),
 			Mimetype:      proto.String(http.DetectContentType(data)),
 			FileEncSHA256: uploaded.FileEncSHA256,
 			FileSHA256:    uploaded.FileSHA256,
-			FileLength:    &uploaded.FileLength,
+			FileLength:    proto.Uint64(uploaded.FileLength),
 			ContextInfo:   opts,
 		},
 	}
@@ -273,4 +273,39 @@ func (client *NewClientImpl) GetBytes(url string) ([]byte, error) {
 	}
 
 	return bytes, nil
+}
+
+func (client *NewClientImpl) SendInteractiveMessage(
+	jid types.JID,
+	buttons []*waProto.InteractiveMessage_NativeFlowMessage_NativeFlowButton,
+	messageParams map[string]any,
+	bodyText string,
+	opts *waProto.ContextInfo,
+) (whatsmeow.SendResponse, error) {
+
+	// Encode Params JSON
+	paramsJSON, _ := json.Marshal(messageParams)
+
+	msg := &waProto.Message{
+		InteractiveMessage: &waProto.InteractiveMessage{
+			Body: &waProto.InteractiveMessage_Body{
+				Text: proto.String(bodyText),
+			},
+
+			// THIS IS THE ONEOF!
+			InteractiveMessage: &waProto.InteractiveMessage_NativeFlowMessage_{
+				NativeFlowMessage: &waProto.InteractiveMessage_NativeFlowMessage{
+					Buttons:           buttons,
+					MessageParamsJSON: proto.String(string(paramsJSON)),
+					MessageVersion:    proto.Int32(1),
+				},
+			},
+		},
+	}
+
+	ok, err := client.WA.SendMessage(context.Background(), jid, msg)
+	if err != nil {
+		return whatsmeow.SendResponse{}, err
+	}
+	return ok, nil
 }
