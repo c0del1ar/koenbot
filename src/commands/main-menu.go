@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"koenbot/src/helpers"
 	"koenbot/src/libs"
-	"os"
 	"sort"
 	"strings"
 )
@@ -52,7 +51,7 @@ func menu(client *libs.NewClientImpl, m *libs.IMessage) {
 	sort.Sort(keys)
 
 	for _, key := range keys {
-		str += fmt.Sprintf(" *%s*\n", strings.ToUpper(key))
+		str += fmt.Sprintf(" *# %s*\n", strings.ToUpper(key))
 		for _, e := range tags[key] {
 			var prefix string
 			if e.IsPrefix {
@@ -61,12 +60,12 @@ func menu(client *libs.NewClientImpl, m *libs.IMessage) {
 				prefix = ""
 			}
 			for _, nm := range e.Name {
-				str += fmt.Sprintf("ゝ %s%s\n", prefix, nm)
+				str += fmt.Sprintf("> ゝ %s%s\n", prefix, nm)
 			}
 		}
 		str += "\n"
 	}
-	client.SendWithNewsLestter(m.From, str, "120363197944003644@newsletter", 100, os.Getenv("Name_Bot")+" Bot", m.ID)
+	client.SendWithNewsLestter(m.From, str, "120363197944003644@newsletter", 100, helpers.BotName()+" Bot", m.ID)
 }
 
 func init() {

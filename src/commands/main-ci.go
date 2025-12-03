@@ -24,7 +24,7 @@ func init() {
 
 			key, err := client.WA.GetNewsletterInfoWithInvite(libs.ContextB(), strings.Split(m.Querry, "/")[4])
 			if err != nil {
-				m.Reply(helpers.Name + " Tidak Tau Ya.")
+				m.Reply(helpers.BotName() + " Tidak Tau Ya.")
 				return
 			}
 

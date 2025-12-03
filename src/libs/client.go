@@ -94,14 +94,14 @@ func (client *NewClientImpl) SendVideo(from types.JID, data []byte, caption stri
 
 	resultVideo := &waProto.Message{
 		VideoMessage: &waProto.VideoMessage{
-			URL:           proto.String(uploaded.URL),
-			DirectPath:    proto.String(uploaded.DirectPath),
+			URL:           &uploaded.URL,
+			DirectPath:    &uploaded.DirectPath,
 			MediaKey:      uploaded.MediaKey,
 			Caption:       proto.String(caption),
 			Mimetype:      proto.String(http.DetectContentType(data)),
 			FileEncSHA256: uploaded.FileEncSHA256,
 			FileSHA256:    uploaded.FileSHA256,
-			FileLength:    proto.Uint64(uploaded.FileLength),
+			FileLength:    &uploaded.FileLength,
 			ContextInfo:   opts,
 		},
 	}

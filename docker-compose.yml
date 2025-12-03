@@ -1,5 +1,6 @@
 services:
   koenbot:
+    network_mode: host
     build:
       context: .
       dockerfile: .dockerize/Dockeralp
@@ -8,4 +9,4 @@ services:
     volumes:
       - ./store:/botapp/store
       - ./temp:/botapp/temp
-    tty: true                   
+    tty: true

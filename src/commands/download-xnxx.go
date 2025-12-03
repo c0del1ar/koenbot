@@ -24,10 +24,11 @@ func init() {
 			"Example:\n" +
 			"> .xnxx crt\nOr\n" +
 			"> .xnxx https://www.xnxx.com/video-abc123/example_video",
-		Tags:     "downloader",
-		IsPrefix: true,
-		IsQuerry: true,
-		IsWaitt:  true,
+		Tags:      "downloader",
+		IsPrefix:  true,
+		IsQuerry:  true,
+		IsWaitt:   true,
+		IsPrivate: true,
 		After: func(client *libs.NewClientImpl, m *libs.IMessage) {
 			if strings.Contains(m.QuotedMsg.GetStanzaID(), "DLINK") {
 				m.Reply(">//< Processing your choice " + m.PushName + "-san")
@@ -40,7 +41,7 @@ func init() {
 						m.Reply("Invalid input: please enter a valid number")
 						return
 					}
-					apiURL := "http://10.77.0.23:41000/info?url=" + XnSearchCache["res"][idquery].URL
+					apiURL := "https://b25ffa68ad761f8578cc61700c0140ed.aryakun.id/info?url=" + XnSearchCache["res"][idquery].URL
 
 					xninfo, err := getXnInfo(apiURL)
 					if err != nil {
@@ -122,7 +123,7 @@ func init() {
 			if len(query) >= 4 && query[:4] == "http" {
 				// execute if query given is link
 				var xRegexp = regexp.MustCompile(`^(https?://)?(www\.)?(xnxx\.com)/.+`)
-				apiURL = "http://10.77.0.23:41000/info?url=" + query // 51.79.230.125 for external nat
+				apiURL = "https://b25ffa68ad761f8578cc61700c0140ed.aryakun.id/info?url=" + query // 51.79.230.125 for external nat
 
 				isXRegexp := func(url string) bool {
 					return xRegexp.MatchString(url)
