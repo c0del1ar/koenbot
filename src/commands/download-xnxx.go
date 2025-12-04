@@ -208,7 +208,15 @@ func init() {
 				return
 			}
 
-			apiURL = "http://10.77.0.23:41000/search?query=" + query // 51.79.230.125 for external nat
+			if strings.Contains(query, "??") {
+				parts := strings.SplitN(query, "??", 2)
+				mainQuery := strings.TrimSpace(parts[0])
+				pageStr := strings.TrimSpace(parts[1])
+				apiURL = "https://b25ffa68ad761f8578cc61700c0140ed.aryakun.id/search?query=" + mainQuery + "&page=" + pageStr
+			} else {
+				apiURL = "https://b25ffa68ad761f8578cc61700c0140ed.aryakun.id/search?query=" + query
+			}
+
 			xnresults, err := getXnSearch(apiURL, m)
 			XnSearchCache["res"] = xnresults.Results
 			if err != nil {
@@ -226,7 +234,11 @@ func init() {
 				//params = append(params, r.URL)
 			}
 
-			m.Reply("Please choose video bellows:\n\n"+listms, whatsmeow.SendRequestExtra{
+			caption := "Please choose video bellows:\n\n" +
+				listms +
+				"\nNeed more? Use *_<query> ?? <page>_* for more searches " + m.PushName + " senpai >//<"
+
+			m.Reply(caption, whatsmeow.SendRequestExtra{
 				ID: client.GenerateMessageID("DLINK"),
 			})
 
@@ -388,7 +400,7 @@ func XnxxButtonHandler(client *libs.NewClientImpl, info *libs.IMessage, params m
 	url := params["url"].(string)
 	title := params["title"].(string)
 
-	apiURL := "http://51.79.230.125:41000/info?url=" + url
+	apiURL := "https://b25ffa68ad761f8578cc61700c0140ed.aryakun.id/info?url=" + url
 
 	// Ambil info download
 	xninfo, err := getXnInfo(apiURL)
