@@ -1,8 +1,8 @@
 package commands
 
 import (
-	"context"
 	"fmt"
+	"koenbot/src/helpers"
 	"koenbot/src/libs"
 	"os"
 	"regexp"
@@ -34,9 +34,10 @@ func init() {
 		IsPrefix:  true,
 		IsPrivate: true,
 		After: func(client *libs.NewClientImpl, m *libs.IMessage) {
-			if m.IsGroup {
+			/* if m.IsGroup {
+				m.Reply("Private chat only")
 				return
-			}
+			} */
 			if queque[m.Sender.ToNonAD().String()] && strings.Contains(m.QuotedMsg.GetStanzaID(), "JBOT") {
 				pattern := regexp.MustCompile(`[1-2]`)
 				delete(queque, m.Sender.ToNonAD().String())
@@ -45,22 +46,20 @@ func init() {
 					os.Mkdir(".sesi", 0777)
 					sesiPath := fmt.Sprintf(".sesi/%s.db", m.Sender.ToNonAD().String())
 					dbLog := waLog.Stdout("Database", "ERROR", true)
-					container, err := sqlstore.New(libs.ContextB(), "sqlite3", fmt.Sprintf("file:%s?_foreign_keys=on", sesiPath), dbLog)
+					container, err := sqlstore.New(helpers.CtxB(), "sqlite3", fmt.Sprintf("file:%s?_foreign_keys=on", sesiPath), dbLog)
 					if err != nil {
 						panic(err)
 					}
 					handler := libs.NewHandler(container)
 					conn := handler.Client(true)
 					conn.AddEventHandler(func(evt interface{}) {
-						switch evt.(type) {
+						switch con := evt.(type) {
 						case *events.LoggedOut:
-							con := evt.(*events.LoggedOut)
 							if !con.OnConnect {
 								client.SendText(m.From, "Logout succes", nil)
 								os.Remove(sesiPath)
 								return
 							}
-							break
 						}
 					})
 					conn.PrePairCallback = func(jid types.JID, platform, businessName string) bool {
@@ -81,25 +80,23 @@ func init() {
 								panic(err)
 							}
 
-							code, err := conn.PairPhone(libs.ContextB(), m.Sender.User, true, whatsmeow.PairClientChrome, "Chrome (Linux)")
+							code, err := conn.PairPhone(helpers.CtxB(), m.Sender.User, true, whatsmeow.PairClientChrome, "Chrome (Linux)")
 							if err != nil {
 								panic(err)
 							}
 
 							m.Reply("Code Kamu : " + code + "\n\nExpired : 2 menit")
 							go func() {
-								for range time.Tick(2 * time.Minute) {
-									if isConnect {
-										return
-									}
-									conn.Disconnect()
-									conn.Logout(libs.ContextB())
-									//client.DeleteMsg(m.From, res.ID, true)
-									m.Reply("Expired")
-									os.Remove(sesiPath)
-									delete(jRoom, m.Sender.ToNonAD().String())
-									break
+								<-time.After(2 * time.Minute)
+								if isConnect {
+									return
 								}
+								conn.Disconnect()
+								conn.Logout(helpers.CtxB())
+								//client.DeleteMsg(m.From, res.ID, true)
+								m.Reply("Expired")
+								os.Remove(sesiPath)
+								delete(jRoom, m.Sender.ToNonAD().String())
 							}()
 
 							jRoom[m.Sender.ToNonAD().String()] = IJadibot{
@@ -107,9 +104,8 @@ func init() {
 								Number: m.Sender.User,
 								Client: nil,
 							}
-							break
 						case "2":
-							qrChan, _ := conn.GetQRChannel(context.Background())
+							qrChan, _ := conn.GetQRChannel(helpers.CtxB())
 							if err := conn.Connect(); err != nil {
 								panic(err)
 							}
@@ -119,7 +115,7 @@ func init() {
 								if evt.Event == "code" {
 									if i > 3 {
 										conn.Disconnect()
-										conn.Logout(libs.ContextB())
+										conn.Logout(helpers.CtxB())
 										m.Reply("Limit Qr Sudah Habis")
 										os.Remove(sesiPath)
 										delete(jRoom, m.Sender.ToNonAD().String())
@@ -161,7 +157,7 @@ func init() {
 
 				m.Reply("Success Logout")
 				client.WA.Disconnect()
-				client.WA.Logout(libs.ContextB())
+				client.WA.Logout(helpers.CtxB())
 				os.Remove(fmt.Sprintf(".sesi/%s.db", m.Sender.ToNonAD().String()))
 			} else {
 				if m.IsBot {

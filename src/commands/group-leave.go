@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"koenbot/src/helpers"
 	"koenbot/src/libs"
 )
 
@@ -15,7 +16,7 @@ func init() {
 		IsOwner:  true,
 		IsGroup:  true,
 		Exec: func(client *libs.NewClientImpl, m *libs.IMessage) {
-			err := client.WA.LeaveGroup(libs.ContextB(), m.From)
+			err := client.WA.LeaveGroup(helpers.CtxB(), m.From)
 			if err != nil {
 				m.Reply("koenbot gagal keluar dari group ini.")
 				fmt.Println(err.Error())

@@ -1,8 +1,8 @@
 package commands
 
 import (
-	"context"
 	"fmt"
+	"koenbot/src/helpers"
 	"koenbot/src/libs"
 	"regexp"
 	"strings"
@@ -55,13 +55,13 @@ func init() {
 					}
 				}
 			}
-			if ujid == nil || len(ujid) == 0 {
+			if len(ujid) == 0 {
 				m.Reply("Tag atau balas pesan seseorang yang mau dijadikan admin/dijatuhkan dari admin.")
 				return
 			}
 
 			if regexp.MustCompile(`demote|dm`).MatchString(m.Command) {
-				resp, err := client.WA.UpdateGroupParticipants(context.Background(), m.From, ujid, whatsmeow.ParticipantChangeDemote)
+				resp, err := client.WA.UpdateGroupParticipants(helpers.CtxB(), m.From, ujid, whatsmeow.ParticipantChangeDemote)
 				if err != nil {
 					m.Reply("Gagal menurunkan admin")
 					return
@@ -75,7 +75,7 @@ func init() {
 					}
 				}
 			} else {
-				resp, err := client.WA.UpdateGroupParticipants(context.Background(), m.From, ujid, whatsmeow.ParticipantChangePromote)
+				resp, err := client.WA.UpdateGroupParticipants(helpers.CtxB(), m.From, ujid, whatsmeow.ParticipantChangePromote)
 				if err != nil {
 					m.Reply("Gagal menjadikan admin")
 					return

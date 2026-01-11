@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"context"
 	"fmt"
 	"koenbot/src/libs"
 )
@@ -16,7 +17,7 @@ func init() {
 		IsBotAdmin: true,
 		IsGroup:    true,
 		Exec: func(client *libs.NewClientImpl, m *libs.IMessage) {
-			resp, err := client.WA.GetGroupInviteLink(libs.ContextB(), m.From, true)
+			resp, err := client.WA.GetGroupInviteLink(context.Background(), m.From, true)
 			if err != nil {
 				m.Reply("Gagal mereset link group.")
 			} else {

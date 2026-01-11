@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"context"
 	"fmt"
 	"koenbot/src/libs"
 	"strings"
@@ -16,7 +17,7 @@ func init() {
 		IsAdmin:  true,
 		IsGroup:  true,
 		Exec: func(client *libs.NewClientImpl, m *libs.IMessage) {
-			err := client.WA.SetGroupLocked(libs.ContextB(), m.From, strings.Contains(m.Command, "close"))
+			err := client.WA.SetGroupLocked(context.Background(), m.From, strings.Contains(m.Command, "close"))
 			if err != nil {
 				m.Reply("Error")
 				fmt.Println(err.Error())

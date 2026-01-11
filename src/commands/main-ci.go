@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"context"
 	"fmt"
 	"koenbot/src/helpers"
 	"koenbot/src/libs"
@@ -22,7 +23,7 @@ func init() {
 				return
 			}
 
-			key, err := client.WA.GetNewsletterInfoWithInvite(libs.ContextB(), strings.Split(m.Querry, "/")[4])
+			key, err := client.WA.GetNewsletterInfoWithInvite(context.Background(), strings.Split(m.Querry, "/")[4])
 			if err != nil {
 				m.Reply(helpers.BotName() + " Tidak Tau Ya.")
 				return

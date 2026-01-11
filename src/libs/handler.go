@@ -2,9 +2,7 @@ package libs
 
 import (
 	"context"
-	"encoding/json"
 	"koenbot/src/helpers"
-	"strings"
 	"time"
 
 	"go.mau.fi/whatsmeow"
@@ -41,7 +39,7 @@ func (h *IHandler) RegisterHandler(client *whatsmeow.Client, jbot ...bool) func(
 		sock := NewClient(client)
 		switch v := evt.(type) {
 		case *events.Message:
-			if ir := v.Message.GetInteractiveResponseMessage(); ir != nil {
+			/* if ir := v.Message.GetInteractiveResponseMessage(); ir != nil {
 				nf := ir.GetNativeFlowResponseMessage()
 				if nf != nil {
 					var data map[string]any
@@ -55,34 +53,35 @@ func (h *IHandler) RegisterHandler(client *whatsmeow.Client, jbot ...bool) func(
 						return
 					}
 				}
-			}
+			} */
 			// ==== END OF BUTTON HANDLER ====
 
 			// ==== GREETING HANDLER ====
-			if v.Message.GetConversation() != "" {
+			/* if v.Message.GetConversation() != "" {
 				text := strings.ToLower(v.Message.GetConversation())
-				from := v.Info.Chat
 
 				switch text {
 				case "p", "pp", "p!", "p?":
-					sock.SendText(from, "P juga kak 😸", nil)
+					sock.SendText(v.Info.Chat, "P juga kak 😸. Kalo butuh apa-apa ketik *.menu* ya //<", nil)
 					return
 
 				case "hi", "hai", "hii", "halo", "hello", "helo":
-					sock.SendText(from, "Hay uwu>\\\\<! Can i help u? 😊", nil)
+					sock.SendText(v.Info.Chat, "Hay "+sock.WA.Store.PushName+"-san >\\\\<! Can i help u? 😊", nil)
 					return
 				}
-			}
+			} */
 			// ==== END OF GREETING HANDLER ====
 
 			m := NewSmsg(v, sock, jbot...)
 			if !helpers.Public && !m.IsOwner {
 				return
 			}
+
 			// Read message
 			sock.WA.MarkRead(context.Background(), []string{m.StanzaId}, time.Now(), m.From, m.Sender)
 			// Get command
 			go Get(sock, m)
+
 			return
 		case *events.StreamError:
 			helpers.ErrorLogger.Printf("stream error: code=%s raw=%v", v.Code, v.Raw)

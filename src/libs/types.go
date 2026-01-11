@@ -1,8 +1,6 @@
 package libs
 
 import (
-	"context"
-
 	"go.mau.fi/whatsmeow"
 	waProto "go.mau.fi/whatsmeow/proto/waE2E"
 	"go.mau.fi/whatsmeow/types"
@@ -55,5 +53,3 @@ type IMessage struct {
 	Message         *waProto.Message
 	Reply           func(text string, opts ...whatsmeow.SendRequestExtra) (whatsmeow.SendResponse, error)
 }
-
-var ContextB = context.Background

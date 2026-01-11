@@ -1,6 +1,9 @@
 package helpers
 
-import "os"
+import (
+	"context"
+	"os"
+)
 
 var Public = false
 
@@ -10,4 +13,8 @@ func BotName() string {
 
 func Owner() string {
 	return os.Getenv("Owner_Number")
+}
+
+func CtxB() context.Context {
+	return context.Background()
 }
